@@ -1,5 +1,5 @@
 [package]
-name = "memory"
+name = "password-generator"
 version = "0.1.0"
 edition = "2021"
 build = "build.rs"
@@ -7,9 +7,12 @@ build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clipboard = "0.5.0"
+copypasta = "0.10.2"
 rand = "0.8.5"
 slint = "1.8.0"
 
 [build-dependencies]
 slint-build = "1.8.0"
+
+[features]
+wayland = []

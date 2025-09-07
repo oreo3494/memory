@@ -32,4 +32,7 @@ To install git, head to [git-scm.com](https://git-scm.com/book/en/v2/Getting-Sta
 4. Use `cargo`  to build an executable out its source code :\
 `$ cargo build --release`
 
+⚠️ Copying to Clipboard won't work on wayland based display... instead, you would want to compiled with `--features wayland` flag,
+```$ cargo build --release --features wayland```
+
 5. If building ends up successful, there should be an executable present at `/target/release` with name `password-generator`.

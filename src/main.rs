@@ -3,7 +3,7 @@ use slint::SharedString;
 use std::{cell::RefCell, rc::Rc};
 mod func;
 mod pass;
-use clipboard::{ClipboardContext, ClipboardProvider};
+use copypasta::{ClipboardContext, ClipboardProvider};
 use func::{charray, warray};
 use pass::{pass_phrase, placeholder, Include};
 slint::include_modules!();
@@ -346,12 +346,31 @@ fn main() {
 
     let copy_btn = window.as_weak();
     let base_clone = Rc::clone(&base_pass);
-    window.on_copy_clicked(move || {
+
+    #[cfg(not(feature = "wayland"))]
+    window.on_copy_clicked(
+        {
+        let mut clipboard = ClipboardContext::new().expect("Failed to access clipboard! :(");
+
+        move || {
         let app = copy_btn.upgrade().unwrap();
         app.set_copy_state(SharedString::from("Copied!"));
+        clipboard.set_contents(base_clone.borrow().to_owned()).expect("Failed copying value to clipboard!! :(");
+    }});
 
-        let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
-        ctx.set_contents(base_clone.borrow().to_owned()).unwrap();
+    #[cfg(feature = "wayland")]
+    window.on_copy_clicked({
+        use std::process::Command;
+
+        move || {
+
+            let app = copy_btn.upgrade().unwrap();
+            if let Ok(_) = Command::new("wl-copy").arg(base_clone.borrow().to_owned()).status() {
+                app.set_copy_state("Copied!".into());
+            } else {
+                app.set_copy_state("Failed copying, lol".into());
+            }
+        }
     });
 
     let edited_text = window.as_weak();
